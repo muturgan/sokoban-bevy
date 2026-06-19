@@ -1,0 +1,12 @@
+{
+  "[rust]": {
+    "editor.inlayHints.enabled": "offUnlessPressed",
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+    "editor.formatOnSave": true
+  },
+  "rust-analyzer.rustfmt.extraArgs": ["+nightly"],
+  "rust-analyzer.linkedProjects": [
+    "Cargo.toml"
+  ],
+  "nestor.ineditor.actionsPanelBehaviour": "On"
+}

@@ -1,0 +1,24 @@
+[package]
+name = "sokoban"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bevy = { version = "=0.19.0-rc.3" }
+
+[profile.dev]
+debug = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[profile.release]
+strip = true
+opt-level = 3
+lto = true
+codegen-units = 1
+
+[lints.clippy]
+too_many_arguments = "allow"
+missing_const_for_fn = "deny"
+unnecessary_wraps = "deny"
+unused_async = "deny"
+
