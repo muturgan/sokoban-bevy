@@ -11,7 +11,7 @@ mod systems;
 use components::*;
 use embedded::{FONT_DATA, GameFont};
 use levels::load_levels;
-use resources::*;
+use resources::{CrateImage, GameState, Levels, PlayerImage, RestartButtonEntity, WinUIEntity};
 use states::GameMode;
 use systems::*;
 
@@ -36,7 +36,12 @@ fn main() {
         )
         .add_systems(
             Update,
-            (player_input, check_win, spawn_restart_button)
+            (
+                player_input,
+                check_win,
+                spawn_restart_button,
+                update_player_direction,
+            )
                 .chain()
                 .run_if(in_state(GameMode::Playing)),
         )
@@ -57,6 +62,14 @@ fn setup(mut commands: Commands, asset_server: ResMut<AssetServer>) {
     // Загружаем шрифт из встроенных данных и сохраняем в ресурс
     let font_handle = asset_server.add(Font::from_bytes(FONT_DATA.to_vec()));
     commands.insert_resource(GameFont(font_handle.clone()));
+
+    // Загружаем изображение игрока
+    let player_image = asset_server.load("images/char.png");
+    commands.insert_resource(PlayerImage(player_image));
+
+    // Загружаем изображение ящика
+    let crate_image = asset_server.load("images/crate.png");
+    commands.insert_resource(CrateImage(crate_image));
 
     // Загружаем уровни из встроенных данных
     let levels_data = load_levels();

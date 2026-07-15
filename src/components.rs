@@ -5,6 +5,14 @@ use bevy::ecs::component::Component;
 #[derive(Component)]
 pub struct Player;
 
+// Направление взгляда игрока
+#[derive(Component, Default, PartialEq, Clone, Copy)]
+pub enum PlayerDirection {
+    Left,
+    #[default]
+    Right,
+}
+
 #[derive(Component)]
 pub struct Wall;
 

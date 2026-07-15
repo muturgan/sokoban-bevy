@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    components::{BoxMarker, Player, Wall},
+    components::{BoxMarker, Player, PlayerDirection, Wall},
     constants::TILE_SIZE,
     resources::GameState,
 };
@@ -103,6 +103,31 @@ pub fn player_input(
             if let Ok((_, mut t, _, _)) = query.get_mut(player_entity) {
                 t.translation = new_pos;
             }
+        }
+    }
+}
+
+/// Обновляет направление взгляда игрока и flip_x спрайта
+pub fn update_player_direction(
+    keyboard: Res<ButtonInput<KeyCode>>,
+    mut query: Query<(&mut PlayerDirection, &mut Sprite), With<Player>>,
+) {
+    for (mut direction, mut sprite) in query.iter_mut() {
+        let new_direction =
+            if keyboard.pressed(KeyCode::ArrowRight) || keyboard.pressed(KeyCode::KeyD) {
+                Some(PlayerDirection::Right)
+            } else if keyboard.pressed(KeyCode::ArrowLeft) || keyboard.pressed(KeyCode::KeyA) {
+                Some(PlayerDirection::Left)
+            } else {
+                None
+            };
+
+        if let Some(dir) = new_direction
+            && dir != *direction
+        {
+            *direction = dir;
+            // flip_x: true = смотрит вправо, false = смотрит влево
+            sprite.flip_x = dir == PlayerDirection::Left;
         }
     }
 }

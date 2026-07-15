@@ -3,7 +3,9 @@ use bevy::prelude::*;
 use crate::{
     components::{GameCompleteUI, RestartButtonUI, WinUIContainer},
     embedded::GameFont,
-    resources::{GameState, LevelEntity, Levels, RestartButtonEntity, WinUIEntity},
+    resources::{
+        CrateImage, GameState, LevelEntity, Levels, PlayerImage, RestartButtonEntity, WinUIEntity,
+    },
     states::GameMode,
     systems::load_level_direct,
 };
@@ -109,6 +111,8 @@ pub fn restart_level(world: &mut World) {
     let current_level = game_state.current_level;
     let level_entity_opt = world.get_resource::<LevelEntity>().map(|r| r.0);
     let levels = world.get_resource::<Levels>().unwrap().data;
+    let player_image = world.get_resource::<PlayerImage>().unwrap().0.clone();
+    let crate_image = world.get_resource::<CrateImage>().unwrap().0.clone();
 
     // Сбрасываем состояние победы
     let mut game_state_mut = world.get_resource_mut::<GameState>().unwrap();
@@ -143,7 +147,7 @@ pub fn restart_level(world: &mut World) {
     ui_entity.0 = None;
 
     // Загружаем новый уровень напрямую через world.spawn
-    load_level_direct(world, current_level, levels);
+    load_level_direct(world, current_level, levels, &player_image, &crate_image);
 
     // Переключаем состояние обратно
     let mut next_mode = world.get_resource_mut::<NextState<GameMode>>().unwrap();

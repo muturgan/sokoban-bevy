@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     components::{LoadingUI, WinUI},
-    resources::{GameState, Levels},
+    resources::{CrateImage, GameState, Levels, PlayerImage},
     states::GameMode,
     systems::level::load_level,
 };
@@ -12,8 +12,13 @@ pub fn check_loaded_levels(
     levels: Option<Res<Levels>>,
     loading_query: Query<Entity, With<LoadingUI>>,
     mut next_mode: ResMut<NextState<GameMode>>,
+    player_image: Option<Res<PlayerImage>>,
+    crate_image: Option<Res<CrateImage>>,
 ) {
-    if levels.is_some() {
+    if let Some(levels_res) = levels
+        && let Some(player_img) = player_image
+        && let Some(crate_img) = crate_image
+    {
         // Удаляем UI загрузки
         for entity in loading_query.iter() {
             commands.entity(entity).despawn();
@@ -21,9 +26,13 @@ pub fn check_loaded_levels(
         // Переключаем в режим игры
         next_mode.set(GameMode::Playing);
         // Загружаем первый уровень
-        if let Some(levels_res) = levels {
-            load_level(&mut commands, 0, levels_res.data);
-        }
+        load_level(
+            &mut commands,
+            0,
+            levels_res.data,
+            &player_img.0,
+            &crate_img.0,
+        );
     }
 }
 

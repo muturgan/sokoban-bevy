@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    components::{BoxMarker, Floor, LevelRoot, Player, Target, Wall},
+    components::{BoxMarker, Floor, LevelRoot, Player, PlayerDirection, Target, Wall},
     constants::TILE_SIZE,
     embedded::Tile,
     resources::LevelEntity,
@@ -11,6 +11,8 @@ pub fn load_level(
     commands: &mut Commands,
     level_index: usize,
     levels: &[crate::embedded::LevelData],
+    player_image: &Handle<Image>,
+    crate_image: &Handle<Image>,
 ) {
     let level_data = &levels[level_index % levels.len()];
     let width = level_data.width;
@@ -50,22 +52,29 @@ pub fn load_level(
                             ));
                         }
                         Tile::Player => {
+                            // Пол под игроком
+                            parent.spawn(spawn_floor(pos));
+                            // Игрок
                             parent.spawn((
                                 Sprite {
-                                    color: Color::srgb(0.2, 0.6, 0.9),
-                                    custom_size: Some(Vec2::splat(TILE_SIZE * 0.8)),
+                                    image: player_image.clone(),
+                                    custom_size: Some(Vec2::splat(TILE_SIZE * 0.9)),
                                     ..default()
                                 },
                                 Transform::from_xyz(pos.x, pos.y, 1.0),
                                 Player,
+                                PlayerDirection::Right,
                                 Name::new("Player"),
                             ));
                         }
                         Tile::Crate => {
+                            // Пол под ящиком
+                            parent.spawn(spawn_floor(pos));
+                            // Ящик
                             parent.spawn((
                                 Sprite {
-                                    color: Color::srgb(0.8, 0.5, 0.2),
-                                    custom_size: Some(Vec2::splat(TILE_SIZE * 0.85)),
+                                    image: crate_image.clone(),
+                                    custom_size: Some(Vec2::splat(TILE_SIZE * 1.15)),
                                     ..default()
                                 },
                                 Transform::from_xyz(pos.x, pos.y, 0.5),
@@ -113,6 +122,8 @@ pub fn load_level_direct(
     world: &mut World,
     level_index: usize,
     levels: &[crate::embedded::LevelData],
+    player_image: &Handle<Image>,
+    crate_image: &Handle<Image>,
 ) {
     let level_data = &levels[level_index % levels.len()];
     let width = level_data.width as i32;
@@ -152,22 +163,29 @@ pub fn load_level_direct(
                             ));
                         }
                         Tile::Player => {
+                            // Пол под игроком
+                            parent.spawn(spawn_floor(pos));
+                            // Игрок
                             parent.spawn((
                                 Sprite {
-                                    color: Color::srgb(0.2, 0.6, 0.9),
-                                    custom_size: Some(Vec2::splat(TILE_SIZE * 0.8)),
+                                    image: player_image.clone(),
+                                    custom_size: Some(Vec2::splat(TILE_SIZE * 0.9)),
                                     ..default()
                                 },
                                 Transform::from_xyz(pos.x, pos.y, 1.0),
                                 Player,
+                                PlayerDirection::Right,
                                 Name::new("Player"),
                             ));
                         }
                         Tile::Crate => {
+                            // Пол под ящиком
+                            parent.spawn(spawn_floor(pos));
+                            // Ящик
                             parent.spawn((
                                 Sprite {
-                                    color: Color::srgb(0.8, 0.5, 0.2),
-                                    custom_size: Some(Vec2::splat(TILE_SIZE * 0.85)),
+                                    image: crate_image.clone(),
+                                    custom_size: Some(Vec2::splat(TILE_SIZE * 1.15)),
                                     ..default()
                                 },
                                 Transform::from_xyz(pos.x, pos.y, 0.5),
@@ -189,16 +207,7 @@ pub fn load_level_direct(
                         }
                         Tile::Empty => {
                             // Пол - видимая плитка
-                            parent.spawn((
-                                Sprite {
-                                    color: Color::srgb(0.15, 0.15, 0.18),
-                                    custom_size: Some(Vec2::splat(TILE_SIZE)),
-                                    ..default()
-                                },
-                                Transform::from_xyz(pos.x, pos.y, -0.2),
-                                Floor,
-                                Name::new("Floor"),
-                            ));
+                            parent.spawn(spawn_floor(pos));
                         }
                     }
                 }
@@ -208,4 +217,17 @@ pub fn load_level_direct(
 
     // Сохраняем сущность уровня в ресурсе
     world.insert_resource(LevelEntity(level_root));
+}
+
+fn spawn_floor(pos: Vec2) -> impl Bundle {
+    (
+        Sprite {
+            color: Color::srgb(0.15, 0.15, 0.18),
+            custom_size: Some(Vec2::splat(TILE_SIZE)),
+            ..default()
+        },
+        Transform::from_xyz(pos.x, pos.y, -0.2),
+        Floor,
+        Name::new("Floor"),
+    )
 }

@@ -1,6 +1,17 @@
-use bevy::ecs::{entity::Entity, resource::Resource};
+use bevy::{
+    ecs::{entity::Entity, resource::Resource},
+    prelude::{Handle, Image},
+};
 
 use crate::embedded::LevelData;
+
+// Ресурс для хранения изображения игрока
+#[derive(Resource)]
+pub struct PlayerImage(pub Handle<Image>);
+
+// Ресурс для хранения изображения ящика
+#[derive(Resource)]
+pub struct CrateImage(pub Handle<Image>);
 
 // Ресурс для отслеживания состояния победы
 #[derive(Resource, Default)]
