@@ -43,11 +43,13 @@ fn main() -> io::Result<()> {
         // Валидация: количество ящиков == количество целей
         let mut boxes = 0;
         let mut targets = 0;
+        let mut players = 0;
         for line in &lines {
             for ch in line.chars() {
                 match ch {
                     'B' => boxes += 1,
                     'T' => targets += 1,
+                    'P' => players += 1,
                     _ => {}
                 }
             }
@@ -57,6 +59,12 @@ fn main() -> io::Result<()> {
                 "Уровень {:?}: количество ящиков ({boxes}) не равно количеству целей ({targets})",
                 entry.file_name()
             );
+        }
+        if players == 0 {
+            panic!("Уровень {:?}: отсутствует игрок (P)", entry.file_name());
+        }
+        if players > 1 {
+            panic!("Уровень {:?}: слишком много игроков ({players}), должен быть ровно 1", entry.file_name());
         }
 
         // Генерируем плоский массив тайлов
