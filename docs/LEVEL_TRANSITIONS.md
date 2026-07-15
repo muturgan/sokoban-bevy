@@ -36,9 +36,9 @@ pub fn restart_level(world: &mut World) {
     // Сбрасываем состояние победы
     let mut game_state_mut = world.get_resource_mut::<GameState>().unwrap();
     game_state_mut.won = false;
-    
+
     // ... удаление UI и уровня ...
-    
+
     load_level_direct(world, current_level, &levels);
     next_mode.set(GameMode::Playing);
 }
