@@ -82,15 +82,16 @@ See [docs/LEVEL_TRANSITIONS.md](docs/LEVEL_TRANSITIONS.md) for details.
 
 ### Before Reporting Completion
 
-**Always run `cargo check` after making code changes** before telling the user that changes are complete:
+**Always run `cargo clippy` after making code changes** before telling the user that changes are complete:
 
 ```bash
-cargo check
+cargo clippy
 ```
 
 If there are errors:
 1. Fix all compilation errors
-2. Re-run `cargo check` until it passes
-3. Only then report completion to the user
+2. Re-run `cargo clippy` until it passes
+3. Run `cargo +nightly fmt` to apply a code style
+4. Only then report completion to the user
 
 This ensures you don't report "done" for broken code.
