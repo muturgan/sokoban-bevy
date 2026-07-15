@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**Sokoban** — puzzle game built with **Bevy 0.19.0-rc.3** (Rust).
+**Sokoban** — puzzle game built with **Bevy 0.19.0** (Rust).
 
 Features:
 - Multiple levels with target positions for boxes
