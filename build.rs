@@ -4,7 +4,7 @@ use std::{
     path::Path,
 };
 
-fn main() -> io::Result<()> {
+fn main() -> Result<(), io::Error> {
     let out_dir = env::var("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("embedded_assets.rs");
     let mut file = fs::File::create(&dest_path)?;
