@@ -3,14 +3,12 @@ use bevy::{prelude::*, window::WindowResolution};
 mod components;
 mod constants;
 mod embedded;
-mod levels;
 mod resources;
 mod states;
 mod systems;
 
 use components::*;
-use embedded::{FONT_DATA, GameFont};
-use levels::load_levels;
+use embedded::{FONT_DATA, GameFont, LEVELS};
 use resources::{CrateImage, GameState, Levels, PlayerImage, RestartButtonEntity, WinUIEntity};
 use states::GameMode;
 use systems::*;
@@ -72,8 +70,7 @@ fn setup(mut commands: Commands, asset_server: ResMut<AssetServer>) {
     commands.insert_resource(CrateImage(crate_image));
 
     // Загружаем уровни из встроенных данных
-    let levels_data = load_levels();
-    commands.insert_resource(Levels { data: levels_data });
+    commands.insert_resource(Levels { data: LEVELS });
 
     // Спавним UI загрузки
     commands

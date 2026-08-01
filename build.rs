@@ -14,6 +14,10 @@ fn main() -> Result<(), io::Error> {
     println!("cargo:rerun-if-changed={}", font_path.display());
 
     let font_bytes = fs::read(font_path)?;
+    writeln!(
+        file,
+        "/// При компиляции шрифт встраивается из ассетов в бинарный файл"
+    )?;
     writeln!(file, "pub const FONT_DATA: &[u8] = &{:?};", font_bytes)?;
 
     // === Уровни ===
@@ -166,6 +170,10 @@ fn main() -> Result<(), io::Error> {
     }
 
     // Генерируем массив уровней
+    writeln!(
+        file,
+        "/// При компиляции все уровни встраиваются из ассетов в бинарный файл"
+    )?;
     writeln!(file, "pub const LEVELS: &[LevelData] = &[")?;
     for (idx, entry) in entries.iter().enumerate() {
         let content = fs::read_to_string(entry.path())?;
