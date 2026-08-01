@@ -12,6 +12,14 @@ Features:
 
 ## Key Documentation
 
+### 📖 [struct.md](struct.md)
+
+**Read for a high-level overview of the project layout.** Contains:
+
+1. **Directory tree** — full project structure from root to source files
+2. **File descriptions** — one-line summary of each file's purpose
+3. **Asset locations** — fonts, images, levels, embedded assets
+
 ### 📖 [docs/BEVY_ECS_PATTERNS.md](docs/BEVY_ECS_PATTERNS.md)
 
 **Read this first when working on game logic.** Contains:
