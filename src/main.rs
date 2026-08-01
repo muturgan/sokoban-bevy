@@ -35,10 +35,10 @@ fn main() {
         .add_systems(
             Update,
             (
+                update_player_direction,
                 player_input,
                 check_win,
                 spawn_restart_button,
-                update_player_direction,
             )
                 .chain()
                 .run_if(in_state(GameMode::Playing)),
