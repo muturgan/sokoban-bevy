@@ -51,7 +51,7 @@ fn main() {
         )
         .add_systems(
             Update,
-            (next_level_button, restart_button_handler).run_if(in_state(GameMode::Playing)),
+            (next_level_button_hover, restart_button_hover).run_if(in_state(GameMode::Playing)),
         )
         .run();
 }

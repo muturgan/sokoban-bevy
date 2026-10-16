@@ -1,9 +1,14 @@
-use bevy::prelude::*;
+use bevy::{
+    picking::hover::Hovered,
+    prelude::*,
+    ui_widgets::{Activate, Button},
+};
 
 use crate::{
     components::{BoxMarker, GameCompleteUI, Target, WinUI, WinUIContainer},
     embedded::GameFont,
     resources::{GameState, Levels, WinUIEntity},
+    states::GameMode,
 };
 
 pub fn check_win(
@@ -43,6 +48,26 @@ pub fn check_win(
             }
         }
     }
+}
+
+fn on_next_level_button_activate(
+    _trigger: On<Activate>,
+    mut next_mode: ResMut<NextState<GameMode>>,
+    mut game_state: ResMut<GameState>,
+    levels: Res<Levels>,
+) {
+    // Проверяем, не последний ли это уровень
+    let is_last_level = game_state.current_level >= levels.data.len() - 1;
+    if is_last_level {
+        // Игра завершена, не переходим на следующий уровень
+        return;
+    }
+
+    // Переход на следующий уровень
+    game_state.current_level = (game_state.current_level + 1) % levels.data.len();
+    game_state.won = false;
+    // Переключаем в режим рестарта для загрузки нового уровня
+    next_mode.set(GameMode::Restarting);
 }
 
 pub fn spawn_win_ui(commands: &mut Commands, font: &GameFont) -> Entity {
@@ -104,10 +129,12 @@ pub fn spawn_win_ui(commands: &mut Commands, font: &GameFont) -> Entity {
                             border: UiRect::all(Val::Px(2.0)),
                             ..default()
                         },
+                        Hovered::default(),
                         BorderColor::all(Color::srgb(0.3, 0.6, 0.9)),
                         BackgroundColor(Color::srgb(0.1, 0.3, 0.5)),
                         WinUI,
                     ))
+                    .observe(on_next_level_button_activate)
                     .with_children(|btn| {
                         btn.spawn((
                             Text::new("→ Следующий уровень"),

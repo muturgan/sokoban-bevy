@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**Sokoban** — puzzle game built with **Bevy 0.19.0** (Rust).
+**Sokoban** — puzzle game built with **Bevy 0.20.0** (Rust).
 
 Features:
 - Multiple levels with target positions for boxes
@@ -24,7 +24,7 @@ Features:
 
 **Read this first when working on game logic.** Contains:
 
-1. **Bevy 0.19 ECS Patterns** — avoiding query conflicts (B0001), using `Without<T>`, `get_many_mut`
+1. **Bevy 0.20 ECS Patterns** — avoiding query conflicts (B0001), using `Without<T>`, `get_many_mut`
 2. **Entity Hierarchy** — parent components (`Transform`, `Visibility`)
 
 ### 📖 [docs/LEVEL_TRANSITIONS.md](docs/LEVEL_TRANSITIONS.md)
@@ -73,11 +73,19 @@ Features:
 |------|-------------|
 | `player.rs` | Player input handling |
 | `level.rs` | Level loading from `LevelData` (`load_level`, `load_level_direct`) |
-| `restart.rs` | Level transition logic (`restart_level`) |
-| `ui.rs` | UI buttons (`next_level_button`, `check_loaded_levels`) |
-| `win.rs` | Win condition check, victory UI spawn, game completion UI |
+| `restart.rs` | Level transition logic (`restart_level`), restart button hover (`restart_button_hover`), restart click observer (`on_restart_button_activate`) |
+| `ui.rs` | Loading check + hover styling of UI buttons (`next_level_button_hover`, `check_loaded_levels`) |
+| `win.rs` | Win condition check, victory UI spawn, game completion UI, next-level click observer (`on_next_level_button_activate`) |
 
 ## Common Pitfalls
+
+### UI Buttons (Bevy 0.20)
+
+⚠️ **Old UI button API is deprecated.** In Bevy 0.20 `Button` and `Interaction` (from `bevy::prelude`) are deprecated and must not be used. This project uses the new widget API:
+
+- **Spawn** buttons with `bevy::ui_widgets::Button` (import explicitly — the prelude `Button` is the deprecated alias).
+- **Hover** — insert `Hovered::default()` (`bevy::picking::hover::Hovered`) on the button and read its boolean via `Changed<Hovered>` (e.g. `restart_button_hover`, `next_level_button_hover`).
+- **Click** — attach an observer to the button entity via `.observe(on_xxx)` and handle the `bevy::ui_widgets::Activate` event. Observer signature uses `On<Activate>` (not `Trigger<Activate>`).
 
 ⚠️ **Level transition bug:** If player can't move after next level, check:
 1. `game_state.won` is reset in `restart_level()`

@@ -39,7 +39,7 @@ pub fn restart_level(world: &mut World) {
 
     // ... удаление UI и уровня ...
 
-    load_level_direct(world, current_level, &levels);
+    load_level_direct(world, current_level, levels, &player_image, &crate_image);
     next_mode.set(GameMode::Playing);
 }
 ```
@@ -50,7 +50,13 @@ pub fn restart_level(world: &mut World) {
 
 ```rust
 // systems/level.rs
-pub fn load_level_direct(world: &mut World, level_index: usize, levels: &[Vec<String>]) {
+pub fn load_level_direct(
+    world: &mut World,
+    level_index: usize,
+    levels: &[crate::embedded::LevelData],
+    player_image: &Handle<Image>,
+    crate_image: &Handle<Image>,
+) {
     let level_root = world.spawn(...).id();
     world.insert_resource(LevelEntity(level_root));
 }
@@ -86,7 +92,10 @@ pub struct GameCompleteUI;  // Маркер UI завершения игры
 3. Кнопка "Следующий уровень" не реагирует на нажатия на последнем уровне
 
 ### Поток перехода на следующий уровень
-1. `next_level_button` (в состоянии `Playing`) → обновляет `current_level`, устанавливает `GameMode::Restarting`
+
+> **Примечание (Bevy 0.20):** кнопки в проекте используют новый widget API (`bevy::ui_widgets::Button`). Клик обрабатывается observer'ом на сущности кнопки через событие `Activate` (сигнатура `On<Activate>`), а подсветка при наведении — через компонент `Hovered`. См. `AGENTS.md` → «UI Buttons (Bevy 0.20)».
+
+1. Кнопка «Следующий уровень» (в состоянии `Playing`) → observer `on_next_level_button_activate` обновляет `current_level`, устанавливает `GameMode::Restarting`
 2. `restart_level` (в состоянии `Restarting`) → сбрасывает `won`, удаляет UI и уровень, загружает новый, переключает на `Playing`
 
 ### Ключевые файлы
@@ -94,10 +103,10 @@ pub struct GameCompleteUI;  // Маркер UI завершения игры
 |------|----------|
 | `src/components.rs` | `WinUIContainer`, `GameCompleteUI` — маркеры UI |
 | `src/resources.rs` | `GameState` с полем `game_complete` |
-| `src/systems/restart.rs` | `restart_level` — сброс состояния, загрузка уровня |
+| `src/systems/restart.rs` | `restart_level` — сброс состояния, загрузка уровня; кнопка «Рестарт» (`on_restart_button_activate`, `restart_button_hover`) |
 | `src/systems/level.rs` | `load_level_direct` — прямая загрузка через `World` |
-| `src/systems/ui.rs` | `next_level_button` — блокируется на последнем уровне |
-| `src/systems/win.rs` | `check_win`, `spawn_game_complete_ui` — проверка победы и завершение игры |
+| `src/systems/ui.rs` | `next_level_button_hover` — подсветка кнопки при наведении |
+| `src/systems/win.rs` | `check_win`, `spawn_game_complete_ui`, `on_next_level_button_activate` — проверка победы, завершение игры, переход на следующий уровень |
 | `src/systems/player.rs` | `player_input` — проверка `game_state.won` |
 | `src/embedded.rs` | `Tile`, `LevelData` — встроенные данные уровней |
 | `build.rs` | Генерация констант уровней при компиляции |
@@ -110,4 +119,4 @@ pub struct GameCompleteUI;  // Маркер UI завершения игры
 
 ---
 
-*Документ создан 2026-06-18 после исправления бага с переходом между уровнями в Sokoban*
+*Документ создан 2026-06-18 после исправления бага с переходом между уровнями в Sokoban. Актуализирован под Bevy 0.20 (кнопки переведены на widget API, клик — через observer `Activate`).*

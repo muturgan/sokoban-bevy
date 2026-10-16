@@ -1,4 +1,8 @@
-use bevy::prelude::*;
+use bevy::{
+    picking::hover::Hovered,
+    prelude::*,
+    ui_widgets::{Activate, Button},
+};
 
 use crate::{
     components::{GameCompleteUI, RestartButtonUI, WinUIContainer},
@@ -31,6 +35,7 @@ pub fn spawn_restart_button(
                 ..default()
             },
             Button,
+            Hovered::default(),
             BackgroundColor(Color::srgb(0.2, 0.2, 0.25)),
             BorderColor::all(Color::srgb(0.5, 0.5, 0.5)),
             RestartButtonUI,
@@ -47,43 +52,41 @@ pub fn spawn_restart_button(
                 RestartButtonUI,
             ));
         })
+        .observe(on_restart_button_activate)
         .id();
 
     commands.insert_resource(RestartButtonEntity(Some(entity)));
 }
 
-#[allow(clippy::type_complexity)]
-pub fn restart_button_handler(
+fn on_restart_button_activate(
+    _trigger: On<Activate>,
     mut commands: Commands,
-    mut interactions: Query<
-        (&Interaction, &mut BackgroundColor),
-        (Changed<Interaction>, With<Button>, With<RestartButtonUI>),
-    >,
-    mut next_mode: ResMut<NextState<GameMode>>,
     mut game_state: ResMut<GameState>,
     mut ui_entity: ResMut<WinUIEntity>,
+    mut next_mode: ResMut<NextState<GameMode>>,
 ) {
-    for (interaction, mut color) in &mut interactions {
-        match *interaction {
-            Interaction::Pressed => {
-                // Сбрасываем состояние
-                game_state.won = false;
+    // Сбрасываем состояние
+    game_state.won = false;
 
-                // Удаляем UI победы если есть
-                if let Some(entity) = ui_entity.0.take() {
-                    commands.entity(entity).despawn();
-                }
+    // Удаляем UI победы если есть
+    if let Some(entity) = ui_entity.0.take() {
+        commands.entity(entity).despawn();
+    }
 
-                // Переключаем в режим рестарта
-                next_mode.set(GameMode::Restarting);
-            }
-            Interaction::Hovered => {
-                *color = BackgroundColor(Color::srgb(0.3, 0.3, 0.4));
-            }
-            Interaction::None => {
-                *color = BackgroundColor(Color::srgb(0.2, 0.2, 0.25));
-            }
-        }
+    // Переключаем в режим рестарта
+    next_mode.set(GameMode::Restarting);
+}
+
+#[allow(clippy::type_complexity)]
+pub fn restart_button_hover(
+    mut q: Query<(&Hovered, &mut BackgroundColor), (Changed<Hovered>, With<RestartButtonUI>)>,
+) {
+    for (hovered, mut color) in &mut q {
+        *color = BackgroundColor(if hovered.get() {
+            Color::srgb(0.3, 0.3, 0.4)
+        } else {
+            Color::srgb(0.2, 0.2, 0.25)
+        });
     }
 }
 
