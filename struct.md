@@ -25,7 +25,7 @@ sokoban-bevy/
 │       └── level_05.txt                    — Level 5: harder puzzle layout
 ├── build.rs                                — Compile-time asset embedder: reads .ttf + .txt, validates levels, generates embedded_assets.rs
 ├── docs/
-│   ├── BEVY_ECS_PATTERNS.md                — Bevy 0.19 ECS query conflict (B0001) patterns and solutions
+│   ├── BEVY_ECS_PATTERNS.md                — Bevy 0.19+ ECS query conflict (B0001) patterns and solutions
 │   ├── LEVEL_FORMAT.md                     — Level file syntax, validation rules, examples
 │   └── LEVEL_TRANSITIONS.md                — Level transition implementation: win-flag reset, UI cleanup, World-based loading
 ├── rustfmt.toml                            — Rust formatter config
